@@ -80,13 +80,13 @@ public class GamePanel extends JPanel{
             double distance = Math.sqrt(Math.pow(enemyCircle.getCenterX() - playerCircle.getCenterX(), 2) + Math.pow(enemyCircle.getCenterY() - playerCircle.getCenterY(), 2));
             double radiusSum = (playerCircle.getWidth() + enemyCircle.getWidth()) / 2;
             if (distance <= radiusSum) {
+                enemies = new ConcurrentHashMap<>();
                 playerLives--;
                 if(playerLives == 0){
                     endGame();
                 }
                 player.setXpos(GameConstant.SCREEN_MAX_WIDTH/2);
                 player.setYpos(GameConstant.SCREEN_MAX_HEIGHT/2);
-                enemies = new ConcurrentHashMap<>();
             }
         }
     }
@@ -100,18 +100,19 @@ public class GamePanel extends JPanel{
 
     }
     public void pauseGame(){
-        int tempLives = playerLives;
-        playerLives = 0;
         gamePaused = true;
     }
+    public void unpauseGame(){
+        gamePaused = false;
+    }
+
     public boolean gamePaused(){
         return gamePaused;
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        if(playerLives != 0){
+        if(playerLives > 0 && !gamePaused()){
             double angle = Math.toDegrees(Math.atan2(mouseInputs.cursorY - player.getYpos(), mouseInputs.cursorX - player.getXpos())) + 90;
-            //draw player
             g.drawImage(rotator.rotate(player.getPlayerImage(), angle), player.getXpos() - player.getWidth()/2, player.getYpos()- player.getHeight()/2, null);
             for (Bullet i : bullets.keySet()){
                 i.update();
@@ -126,7 +127,7 @@ public class GamePanel extends JPanel{
                 for(Bullet j : bullets.keySet()){
                     checkIntersect(i,j);
                 }
-                if (enemies.get(i) == 0){
+                if (enemies.size() != 0 && enemies.get(i) == 0){ //have to check if the enemies concurrenthashmap is greater than 0 as it creates an exception when 2 threads are running and the player dies (hashmap gets reset to a new one)
                     enemies.remove(i);
                     score++;
                 }
@@ -140,7 +141,6 @@ public class GamePanel extends JPanel{
             else if (canMakeBullet && mouseInputs.returnMouseDown()){
                 try {
                     makeBullet(mouseInputs.cursorX, mouseInputs.cursorY);
-                    System.out.println("bullet made");
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -155,6 +155,23 @@ public class GamePanel extends JPanel{
                     throw new RuntimeException(e);
                 }
             }
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 30));
+            g.drawString("Score: " + score, 50, 50);
+            g.drawString("Lives: " + playerLives, 300, 50);
+        }
+        else if (gamePaused()){
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 100));
+            g.drawString("Game Paused!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
+            g.setColor(Color.darkGray);
+            g.setFont(new Font("Arial", Font.BOLD, 50));
+            g.drawString("Press Esc to Unpause", GameConstant.SCREEN_MAX_WIDTH/2 - 275, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+        }
+        else{
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("Arial", Font.BOLD, 100));
+            g.drawString("Game Finished!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
         }
     }
 

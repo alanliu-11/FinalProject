@@ -21,22 +21,25 @@ public class KeyboardInputs implements KeyListener{
         switch (e.getKeyCode()){
             case KeyEvent.VK_W:
                 flag[0] = true;
-                System.out.println("W PRESSED");
                 break;
             case KeyEvent.VK_A:
                 flag[1] = true;
-                System.out.println("A PRESSED");
                 break;
             case KeyEvent.VK_S:
                 flag[2] = true;
-                System.out.println("S PRESSED");
                 break;
             case KeyEvent.VK_D:
                 flag[3] = true;
-                System.out.println("D PRESSED");
                 break;
             case KeyEvent.VK_ESCAPE:
-                gamePanel.pauseGame();
+                if (gamePanel.gamePaused()){
+                   gamePanel.unpauseGame();
+                    System.out.println("game unpaused");
+                }
+                else{
+                    gamePanel.pauseGame();
+                    System.out.println("game paused");
+                }
         }
     }
     @Override

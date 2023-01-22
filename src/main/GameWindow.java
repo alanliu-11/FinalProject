@@ -14,13 +14,5 @@ public class GameWindow {
         jframe.setLocationRelativeTo(null);
         jframe.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         jframe.setVisible(true);
-        //System.out.println(jframe.getHeight());
-        //System.out.print(jframe.getWidth());
-    }
-    public int width(){
-        return jframe.getSize().width;
-    }
-    public int length(){
-        return jframe.getSize().width;
     }
 }

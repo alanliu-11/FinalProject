@@ -12,7 +12,7 @@ public class GameConstant {
     public static int PLAYER_INIT_POSY = SCREEN_MAX_HEIGHT/2;
 
     public static int CHECK_DURATION = 1000 ; //Milliseconds
-    public static final double ENEMY_SPEED = 0.1;
+    public static final double ENEMY_SPEED = 0.5;
     public static final int ENEMY_HEALTH = 5;
     public static final int DELAY = 25;
 
