@@ -15,9 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 public class GamePanel extends JPanel{
-    private int frames = 0;
     public KeyboardInputs k = new KeyboardInputs(this);
-    public MouseInputs mouseInputs = new MouseInputs(this);
+    public MouseInputs mouseInputs = new MouseInputs();
     private long lastCheck = 0;
     public Rotator rotator;
     public Timer timer;
@@ -86,8 +85,8 @@ public class GamePanel extends JPanel{
                     updateLeaderboard();
                     saveLeaderboard();
                 }
-                player.setXpos(GameConstant.SCREEN_MAX_WIDTH/2);
-                player.setYpos(GameConstant.SCREEN_MAX_HEIGHT/2);
+                player.setXpos(GameConstant.PLAYER_INIT_POSX);
+                player.setYpos(GameConstant.PLAYER_INIT_POSY);
             }
         }
     }
@@ -133,8 +132,8 @@ public class GamePanel extends JPanel{
         for (int i = 0; i < differentScores; i++){
             int first = in.nextInt();
             TreeSet<String> temp = new TreeSet<>();
+            int second = in.nextInt();
             for (int j = 0; j < first; j++){
-                int second = in.nextInt();
                 temp.add(in.next());
                 leaderBoard.put(second, temp);
             }
@@ -254,7 +253,6 @@ public class GamePanel extends JPanel{
                     throw new RuntimeException(e);
                 }
             }
-            frames++;
             if (!canMakeBullet && System.currentTimeMillis() - lastBulletCheck > GameConstant.DELAY_BULLET){
                 lastBulletCheck = System.currentTimeMillis();
                 canMakeBullet = true;
