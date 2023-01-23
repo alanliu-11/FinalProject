@@ -1,6 +1,4 @@
 package main;
-
-import com.sun.source.tree.Tree;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 import main.gameobjects.Bullet;
