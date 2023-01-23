@@ -1,18 +1,18 @@
 package main;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GameWindow {
-    private JFrame jframe;
     public GameWindow(GamePanel gamePanel){
+        JFrame jframe;
         jframe = new JFrame();
+        jframe.setFocusable(true);
         jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
         jframe.setUndecorated(true);
         jframe.add(gamePanel);
         jframe.setLocationRelativeTo(null);
         jframe.setPreferredSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize()));
         jframe.setVisible(true);
+        jframe.requestFocus();
     }
 }

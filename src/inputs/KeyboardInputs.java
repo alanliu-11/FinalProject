@@ -2,12 +2,16 @@ package inputs;
 
 
 import main.GamePanel;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+/**
+ * @author Alan Liu
+ * Under is the KeyboardInputs class which contains all the keyboard control logic
+ */
 public class KeyboardInputs implements KeyListener{
     private final GamePanel gamePanel;
+    //flag is which keys are pressed when the timer is checked (0 for w, 1 for a, 2 for s, 3 for d)
     private final boolean[] flag = new boolean[4];
     public KeyboardInputs(GamePanel gamePanel){
         this.gamePanel = gamePanel;
@@ -17,6 +21,7 @@ public class KeyboardInputs implements KeyListener{
     }
     @Override
     public void keyPressed(KeyEvent e) {
+        System.out.println("key pressed");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
                 flag[0] = true;
@@ -54,6 +59,7 @@ public class KeyboardInputs implements KeyListener{
                 }
                 break;
             case KeyEvent.VK_P:
+                //if game is paused or game is finished and the p key is pressed, exit the program.
                 if (gamePanel.gamePaused()|| gamePanel.returnGameEnd()){
                     System.exit(0);
                 }
@@ -76,6 +82,10 @@ public class KeyboardInputs implements KeyListener{
                 break;
         }
     }
+
+    /**
+     * This function calls gamePanel to change the player x and y values when the w, a, s, and d keys are pressed.
+     */
     public void update(){
         if (inBounds(gamePanel.getPlayer().getPlayerX(), gamePanel.getPlayer().getPlayerY() - 1) && flag[0]){
             gamePanel.changePlayerY(-1);
@@ -90,6 +100,10 @@ public class KeyboardInputs implements KeyListener{
             gamePanel.changePlayerX(1);
         }
     }
+
+    /**
+     *Checks if player is in bounds of the screen
+     */
     public boolean inBounds(double playerX, double playerY){
         return playerX + 50 < gamePanel.getSize().width && playerX > 0 && playerY > 0 && playerY + 50 < gamePanel.getSize().height;
     }
