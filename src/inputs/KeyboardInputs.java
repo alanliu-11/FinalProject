@@ -33,7 +33,7 @@ public class KeyboardInputs implements KeyListener{
                 break;
             case KeyEvent.VK_ESCAPE:
                 if (gamePanel.getLives() == 0) {
-                    return;
+                    break;
                 }
                 if (gamePanel.gamePaused()) {
                     gamePanel.unpauseGame();
@@ -42,16 +42,18 @@ public class KeyboardInputs implements KeyListener{
                     gamePanel.pauseGame();
                     System.out.println("game paused");
                 }
+                break;
             case KeyEvent.VK_R:
                 if (gamePanel.returnGameEnd()){
                     gamePanel.resetGame();
                 }
+                break;
             case KeyEvent.VK_L:
-                System.out.println(GamePanel.toggleLB);
                 if (gamePanel.returnGameEnd()){
-                    GamePanel.toggleLB = !GamePanel.toggleLB;
-                    GamePanel.printLeaderboard(gamePanel.getGraphics());
+                    gamePanel.toggleLB();
+                    gamePanel.repaint();
                 }
+                break;
         }
     }
     @Override

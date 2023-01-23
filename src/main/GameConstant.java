@@ -1,10 +1,8 @@
 package main;
 
 import java.awt.*;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 public class GameConstant {
 
@@ -17,10 +15,11 @@ public class GameConstant {
 
     public static int CHECK_DURATION = 1000 ; //Milliseconds
     public static final double ENEMY_SPEED = 0.5;
-    public static final int ENEMY_HEALTH = 2;
+    public static final int ENEMY_HEALTH = 3;
     public static final int DELAY = 25;
 
     public static final int FPS_SET = 500;
+    public static final int INIT_PLAYER_LIVES = 5;
     public final PrintWriter pr = new PrintWriter("leaderboard");
 
     public GameConstant() throws FileNotFoundException {

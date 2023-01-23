@@ -11,7 +11,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,7 +30,7 @@ public class GamePanel extends JPanel{
     static ConcurrentHashMap<Enemy, Integer> enemies = new ConcurrentHashMap<>();
     static int score = 0;
     public static boolean gamePaused = false;
-    public static boolean toggleLB = false;
+    public boolean lbToggled = false;
     private Random r = new Random();
     public GamePanel() throws IOException {
         initializeLeaderboard();
@@ -74,7 +74,7 @@ public class GamePanel extends JPanel{
             enemies.put(i, enemies.get(i)-1);
         }
     }
-    private void checkPlayerEnemyCollision() {
+    private void checkPlayerEnemyCollision() throws FileNotFoundException {
         Ellipse2D.Double playerCircle = new Ellipse2D.Double(player.getXpos() - (double)player.getWidth()/2, player.getYpos() - (double)player.getHeight()/2, player.getWidth()-50, player.getHeight()-50);
         for (Enemy enemy : enemies.keySet()) {
             Ellipse2D.Double enemyCircle = new Ellipse2D.Double(enemy.x - 25, enemy.y - 25, 50, 50);
@@ -85,6 +85,8 @@ public class GamePanel extends JPanel{
                 player.loseLife();
                 if(player.getLives() == 0){
                     endGame();
+                    updateLeaderboard();
+                    saveLeaderboard();
                 }
                 player.setXpos(GameConstant.SCREEN_MAX_WIDTH/2);
                 player.setYpos(GameConstant.SCREEN_MAX_HEIGHT/2);
@@ -113,45 +115,93 @@ public class GamePanel extends JPanel{
     public boolean returnGameEnd(){
         return player.getLives() == 0;
     }
+    public void toggleLB(){
+        lbToggled = !lbToggled;
+    }
     public void resetGame(){
+        lbToggled = false;
         player.setPlayerLives(5);
         score = 0;
         enemies = new ConcurrentHashMap<>();
     }
     static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
-    public static void initializeLeaderboard(){
-        Scanner in = new Scanner("leaderboard");
+    static HashSet<String> names = new HashSet<>();
+    public void initializeLeaderboard() throws FileNotFoundException {
+        System.out.println(new File("leaderboard.txt").exists());
+        Scanner in = new Scanner(new File("leaderboard.txt"));
         if (!in.hasNextInt()){
             return;
         }
         int differentScores = in.nextInt();
         for (int i = 0; i < differentScores; i++){
             int first = in.nextInt();
+            TreeSet<String> temp = new TreeSet<>();
             for (int j = 0; j < first; j++){
                 int second = in.nextInt();
-                TreeSet<String> temp = new TreeSet<>();
-                for (int k = 0; k < second; k++){
-                    temp.add(in.next());
-                }
+                temp.add(in.next());
                 leaderBoard.put(second, temp);
             }
         }
+        in.close();
     }
-    public static void printLeaderboard(Graphics g){
+    public void saveLeaderboard() throws FileNotFoundException {
+        File leaderboard = new File("leaderboard.txt");
+        PrintWriter pw = new PrintWriter(leaderboard);
+        pw.write(leaderBoard.size() + " ");
+        for (int i : leaderBoard.keySet()){
+            pw.write(leaderBoard.get(i).size() + " " + i + " ");
+            for (String j : leaderBoard.get(i)){
+                pw.write(j + " ");
+            }
+        }
+        pw.close();
+    }
+    public void printLeaderboard(Graphics g){
         g.setFont(new Font("Arial", Font.BOLD, 100));
         g.drawString("Leaderboard", GameConstant.SCREEN_MAX_WIDTH/2 - 350, 100);
         int printed = 0;
         int yPrint = 200;
-        while (printed < 5){
-            for (int score : leaderBoard.keySet()){
-                for (String player : leaderBoard.get(score)){
+        while (printed < Math.min(5, leaderBoard.size())){
+            for (int score : leaderBoard.keySet()) {
+                for (String player : leaderBoard.get(score)) {
                     g.setColor(Color.BLACK);
                     g.setFont(new Font("Arial", Font.BOLD, 30));
-                    g.drawString(String.format("%10s %3s", player, score), GameConstant.SCREEN_MAX_WIDTH/2 - 350, yPrint);
-                    yPrint += 50;
-                    printed++;
+                    g.drawString(String.format("%10s %3s", player, score), GameConstant.SCREEN_MAX_WIDTH / 2 - 350, yPrint);
+                        yPrint += 50;
+                        printed++;
                 }
             }
+        }
+    }
+    public void updateLeaderboard(){
+        String input = JOptionPane.showInputDialog(null, "Enter your username:");
+        while (input == null || input.isEmpty()){
+            input = JOptionPane.showInputDialog(null, "You have to pick a name:");
+            if (input.isEmpty()){
+                break;
+            }
+        }
+        if (names.contains(input)){
+            int originalScore = 0;
+            for (int lbScore : leaderBoard.keySet()){
+                for (String person : leaderBoard.get(lbScore)){
+                    if (person.equals(input)){
+                        originalScore = lbScore;
+                        break;
+                    }
+                }
+            }
+            if (originalScore < score){
+                leaderBoard.get(originalScore).remove(input); //removes person from that old score if they previously got a higher one
+            }
+        }
+        if (leaderBoard.containsKey(score)){
+            leaderBoard.get(score).add(input);
+        }
+        else{
+            TreeSet<String> tempSet = new TreeSet<>();
+            tempSet.add(input);
+            leaderBoard.put(score, tempSet);
         }
     }
     public static void showEndScreen(Graphics g){
@@ -180,7 +230,6 @@ public class GamePanel extends JPanel{
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        System.out.println("hi");
         if(player.getLives() > 0 && !gamePaused()){
             double angle = Math.toDegrees(Math.atan2(mouseInputs.cursorY - player.getYpos(), mouseInputs.cursorX - player.getXpos())) + 90;
             g.drawImage(rotator.rotate(player.getPlayerImage(), angle), player.getXpos() - player.getWidth()/2, player.getYpos()- player.getHeight()/2, null);
@@ -201,7 +250,11 @@ public class GamePanel extends JPanel{
                     enemies.remove(i);
                     score++;
                 }
-                checkPlayerEnemyCollision();
+                try {
+                    checkPlayerEnemyCollision();
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
             }
             frames++;
             if (!canMakeBullet && System.currentTimeMillis() - lastBulletCheck > GameConstant.DELAY_BULLET){
@@ -218,7 +271,6 @@ public class GamePanel extends JPanel{
             }
             if (System.currentTimeMillis() - lastCheck >= GameConstant.CHECK_DURATION){
                 lastCheck = System.currentTimeMillis();
-                frames = 0;
                 try {
                     int enemySpawnX;
                     int enemySpawnY;
@@ -251,15 +303,12 @@ public class GamePanel extends JPanel{
         else if (gamePaused()){
             showPauseScreen(g);
         }
-        else {
-            System.out.println(toggleLB);
-            if (toggleLB) {
+        else if (returnGameEnd()){
+            if (lbToggled) {
                 printLeaderboard(g);
             } else {
-                System.out.println("end");
                 showEndScreen(g);
             }
         }
     }
-
 }

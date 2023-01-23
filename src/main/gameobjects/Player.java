@@ -10,7 +10,7 @@ import java.io.IOException;
 
 
 public class Player extends BaseObject {
-    public int playerLives = 1;
+    public int playerLives = GameConstant.INIT_PLAYER_LIVES;
     public Player(int posx, int posy){
         setXpos(posx);
         setYpos(posy) ;
