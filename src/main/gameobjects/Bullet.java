@@ -2,7 +2,6 @@ package main.gameobjects;
 
 import main.GameConstant;
 import java.awt.*;
-import java.io.IOException;
 
 public class Bullet extends BaseObject {
     public double x; public double y;
