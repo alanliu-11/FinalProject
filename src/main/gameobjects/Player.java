@@ -1,14 +1,15 @@
 package main.gameobjects;
 
-
 import main.GameConstant;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-
+/**
+ * Player class
+ * @author Alan Liu
+ */
 public class Player extends BaseObject {
     public int playerLives = GameConstant.INIT_PLAYER_LIVES;
     public Player(int posx, int posy){
@@ -21,27 +22,12 @@ public class Player extends BaseObject {
         return playerImage;
     }
 
-    public void crop() throws IOException {
-        BufferedImage image = ImageIO.read(new File("src/res/tank.png")) ;
+    /**
+     * this is called when the image is initialized in GamePanel
+     */
+    public void initializeImage() throws IOException {
+        BufferedImage image = ImageIO.read(new File(GameConstant.playerImagePath));
         this.setImage(image);
-        int width = this.getWidth();
-        int height = this.getHeight();
-        int minX = width;
-        int minY = height;
-        int maxX = 0;
-        int maxY = 0;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                int argb = this.playerImage.getRGB(x, y);
-                int a = (argb >> 24) & 0xff;
-                if (a != 0) {
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                }
-            }
-        }
     }
 
     @Override
@@ -60,10 +46,6 @@ public class Player extends BaseObject {
         return this.getYpos();
     }
 
-    @Override
-    public void step() {
-
-    }
     public void loseLife(){
         playerLives--;
     }

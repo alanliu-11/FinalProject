@@ -1,8 +1,6 @@
 package main.gameobjects;
 
-import main.Game;
 import main.GameConstant;
-
 import java.awt.*;
 import java.io.IOException;
 
@@ -12,6 +10,10 @@ public class Bullet extends BaseObject {
     public Bullet(double x, double y, double angle) throws IOException {
         this.x = x; this.y = y; this.angle = angle;
     }
+
+    /**
+     * updates the position of the bullet, called in the gamePanel class
+     */
     public void update(){
         x += 2 * Math.cos(Math.toRadians(angle));
         y += 2 * Math.sin(Math.toRadians(angle));
@@ -22,11 +24,8 @@ public class Bullet extends BaseObject {
 
     @Override
     public boolean outOfBounds() {
+        //gives a little extra room just to make sure the bullet doesn't get deleted until fully out of screen
         return getXpos() < -100 || getXpos() > GameConstant.SCREEN_MAX_WIDTH + 100 || getYpos() < -100 || getYpos() >  GameConstant.SCREEN_MAX_HEIGHT + 100;
     }
 
-    @Override
-    public void step() {
-
-    }
 }

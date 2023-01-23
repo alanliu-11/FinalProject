@@ -1,15 +1,10 @@
 package main.gameobjects;
 
-import main.gameobjects.Bullet;
-
 import java.awt.image.BufferedImage;
 
 public abstract class BaseObject {
     private int xPos;
     private int yPos;
-    private int width;
-    private int height;
-    protected BufferedImage image;
     BufferedImage playerImage;
 
     public int getXpos() {
@@ -36,17 +31,12 @@ public abstract class BaseObject {
         return this.playerImage.getHeight();
     }
 
-    public BufferedImage getImage() {
-        return image;
-    }
-
     public void setImage(BufferedImage image) {
         this.playerImage = image;
     }
 
 
+    //different objects have different outofbounds logic that needs to be implemented in each child class
     public abstract boolean outOfBounds();
-
-    public abstract void step();
 
 }

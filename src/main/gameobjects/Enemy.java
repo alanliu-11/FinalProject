@@ -1,11 +1,13 @@
 package main.gameobjects;
 
 import java.awt.*;
-
 import main.GameConstant;
-import java.awt.*;
 import java.io.IOException;
 
+/**
+ * Enemy class
+ * @author Alan Liu
+ */
 public class Enemy extends BaseObject {
     public double x; public double y;
     public int health;
@@ -22,13 +24,12 @@ public class Enemy extends BaseObject {
         g.fillOval((int) x,(int) y, 50, 50);
     }
 
+    /**
+     *The enemy will always be chasing the player, which can't go out of bounds. Therefore the enemy will never completely go out of bounds
+     */
     @Override
     public boolean outOfBounds() {
         return false;
     }
 
-    @Override
-    public void step() {
-
-    }
 }

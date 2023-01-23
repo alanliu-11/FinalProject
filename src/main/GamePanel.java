@@ -33,7 +33,7 @@ public class GamePanel extends JPanel{
         initializeLeaderboard();
         this.setBackground(new Color(144,238,144));
         player = new Player(GameConstant.PLAYER_INIT_POSX, GameConstant.PLAYER_INIT_POSY);
-        player.crop();
+        player.initializeImage();
         addKeyListener(k);
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
