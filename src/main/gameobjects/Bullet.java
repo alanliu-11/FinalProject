@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Bullet extends BaseObject {
     public double x; public double y;
     final public double angle; //angle in degrees, set at the start
-    public Bullet(double x, double y, double angle) throws IOException {
+    public Bullet(double x, double y, double angle) {
         this.x = x; this.y = y; this.angle = angle;
     }
 
