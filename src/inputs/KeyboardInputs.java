@@ -9,7 +9,7 @@ import java.awt.event.KeyListener;
 
 public class KeyboardInputs implements KeyListener{
     private GamePanel gamePanel;
-    private boolean[] flag = new boolean[4];
+    private final boolean[] flag = new boolean[4];
     public KeyboardInputs(GamePanel gamePanel){
         this.gamePanel = gamePanel;
     }
@@ -18,7 +18,7 @@ public class KeyboardInputs implements KeyListener{
     }
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()){
+        switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
                 flag[0] = true;
                 break;
@@ -32,13 +32,25 @@ public class KeyboardInputs implements KeyListener{
                 flag[3] = true;
                 break;
             case KeyEvent.VK_ESCAPE:
-                if (gamePanel.gamePaused()){
-                   gamePanel.unpauseGame();
-                    System.out.println("game unpaused");
+                if (gamePanel.getLives() == 0) {
+                    return;
                 }
-                else{
+                if (gamePanel.gamePaused()) {
+                    gamePanel.unpauseGame();
+                    System.out.println("game unpaused");
+                } else {
                     gamePanel.pauseGame();
                     System.out.println("game paused");
+                }
+            case KeyEvent.VK_R:
+                if (gamePanel.returnGameEnd()){
+                    gamePanel.resetGame();
+                }
+            case KeyEvent.VK_L:
+                System.out.println(GamePanel.toggleLB);
+                if (gamePanel.returnGameEnd()){
+                    GamePanel.toggleLB = !GamePanel.toggleLB;
+                    GamePanel.printLeaderboard(gamePanel.getGraphics());
                 }
         }
     }

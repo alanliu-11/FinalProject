@@ -1,5 +1,6 @@
 package main;
 
+import com.sun.source.tree.Tree;
 import inputs.KeyboardInputs;
 import inputs.MouseInputs;
 import main.gameobjects.Bullet;
@@ -7,12 +8,11 @@ import main.gameobjects.Enemy;
 import main.gameobjects.Player;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -23,17 +23,20 @@ public class GamePanel extends JPanel{
     private long lastCheck = 0;
     public Rotator rotator;
     public Timer timer;
-    Player player ;
+    static Player player ;
     boolean canMakeBullet = true;
     long lastBulletCheck = System.currentTimeMillis();
     static ConcurrentHashMap<Bullet, Integer> bullets = new ConcurrentHashMap<Bullet, Integer>();
     static ConcurrentHashMap<Enemy, Integer> enemies = new ConcurrentHashMap<>();
-    static int playerLives = 5;
     static int score = 0;
     public static boolean gamePaused = false;
+    public static boolean toggleLB = false;
+    private Random r = new Random();
     public GamePanel() throws IOException {
-        this.player = new Player(GameConstant.PLAYER_INIT_POSX, GameConstant.PLAYER_INIT_POSY);
-        this.player.crop();
+        initializeLeaderboard();
+        this.setBackground(new Color(144,238,144));
+        player = new Player(GameConstant.PLAYER_INIT_POSX, GameConstant.PLAYER_INIT_POSY);
+        player.crop();
         addKeyListener(k);
         addMouseListener(mouseInputs);
         addMouseMotionListener(mouseInputs);
@@ -45,17 +48,15 @@ public class GamePanel extends JPanel{
         timer.start();
     }
     public void changePlayerX(int value){
-        this.player.setXpos(this.player.getXpos() + value);
+        player.setXpos(player.getXpos() + value);
         repaint();
     }
     public void changePlayerY(int value){
-        this.player.setYpos(this.player.getYpos() + value);
+        player.setYpos(player.getYpos() + value);
         repaint();
     }
-
-    public void setPlayerPos(int x, int y){
-        this.player.setXpos(x);
-        this.player.setYpos(y);
+    public int getLives(){
+        return player.playerLives;
     }
     private void checkIntersect(Enemy i, Bullet j){
         Ellipse2D.Double bulletCircle = new Ellipse2D.Double(j.x, j.y, 10, 10);
@@ -74,15 +75,15 @@ public class GamePanel extends JPanel{
         }
     }
     private void checkPlayerEnemyCollision() {
-        Ellipse2D.Double playerCircle = new Ellipse2D.Double(player.getXpos() - (double)player.getWidth()/2, player.getYpos() - (double)player.getHeight()/2, player.getWidth(), player.getHeight());
+        Ellipse2D.Double playerCircle = new Ellipse2D.Double(player.getXpos() - (double)player.getWidth()/2, player.getYpos() - (double)player.getHeight()/2, player.getWidth()-50, player.getHeight()-50);
         for (Enemy enemy : enemies.keySet()) {
             Ellipse2D.Double enemyCircle = new Ellipse2D.Double(enemy.x - 25, enemy.y - 25, 50, 50);
             double distance = Math.sqrt(Math.pow(enemyCircle.getCenterX() - playerCircle.getCenterX(), 2) + Math.pow(enemyCircle.getCenterY() - playerCircle.getCenterY(), 2));
             double radiusSum = (playerCircle.getWidth() + enemyCircle.getWidth()) / 2;
             if (distance <= radiusSum) {
                 enemies = new ConcurrentHashMap<>();
-                playerLives--;
-                if(playerLives == 0){
+                player.loseLife();
+                if(player.getLives() == 0){
                     endGame();
                 }
                 player.setXpos(GameConstant.SCREEN_MAX_WIDTH/2);
@@ -91,7 +92,7 @@ public class GamePanel extends JPanel{
         }
     }
     public Player getPlayer(){
-        return this.player ;
+        return player ;
     }
     public void makeBullet(int cursorX, int cursorY) throws IOException {
         bullets.put(new Bullet(player.getPlayerX(), player.getPlayerY(), Math.toDegrees(Math.atan2(cursorY - player.getYpos(), cursorX - player.getXpos()))), 0);
@@ -109,9 +110,78 @@ public class GamePanel extends JPanel{
     public boolean gamePaused(){
         return gamePaused;
     }
+    public boolean returnGameEnd(){
+        return player.getLives() == 0;
+    }
+    public void resetGame(){
+        player.setPlayerLives(5);
+        score = 0;
+        enemies = new ConcurrentHashMap<>();
+    }
+    static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
+    public static void initializeLeaderboard(){
+        Scanner in = new Scanner("leaderboard");
+        if (!in.hasNextInt()){
+            return;
+        }
+        int differentScores = in.nextInt();
+        for (int i = 0; i < differentScores; i++){
+            int first = in.nextInt();
+            for (int j = 0; j < first; j++){
+                int second = in.nextInt();
+                TreeSet<String> temp = new TreeSet<>();
+                for (int k = 0; k < second; k++){
+                    temp.add(in.next());
+                }
+                leaderBoard.put(second, temp);
+            }
+        }
+    }
+    public static void printLeaderboard(Graphics g){
+        g.setFont(new Font("Arial", Font.BOLD, 100));
+        g.drawString("Leaderboard", GameConstant.SCREEN_MAX_WIDTH/2 - 350, 100);
+        int printed = 0;
+        int yPrint = 200;
+        while (printed < 5){
+            for (int score : leaderBoard.keySet()){
+                for (String player : leaderBoard.get(score)){
+                    g.setColor(Color.BLACK);
+                    g.setFont(new Font("Arial", Font.BOLD, 30));
+                    g.drawString(String.format("%10s %3s", player, score), GameConstant.SCREEN_MAX_WIDTH/2 - 350, yPrint);
+                    yPrint += 50;
+                    printed++;
+                }
+            }
+        }
+    }
+    public static void showEndScreen(Graphics g){
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(100, 100, GameConstant.SCREEN_MAX_WIDTH-200, GameConstant.SCREEN_MAX_HEIGHT-200);
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 100));
+        g.drawString("Game Finished!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2 - 200);
+        g.setFont(new Font("Arial", Font.BOLD, 50));
+        g.drawString("Press R to play again", GameConstant.SCREEN_MAX_WIDTH/2 - 265, GameConstant.SCREEN_MAX_HEIGHT/2);
+        g.drawString("Press L to show leaderboard", GameConstant.SCREEN_MAX_WIDTH/2 - 325, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+    }
+    public static void showPauseScreen(Graphics g){
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 100));
+        g.drawString("Game Paused!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
+        g.setColor(Color.darkGray);
+        g.setFont(new Font("Arial", Font.BOLD, 50));
+        g.drawString("Press Esc to Unpause", GameConstant.SCREEN_MAX_WIDTH/2 - 275, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+    }
+    public static void showGamestuff(Graphics g){
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 30));
+        g.drawString("Score: " + score, 50, 50);
+        g.drawString("Lives: " + player.playerLives, 300, 50);
+    }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        if(playerLives > 0 && !gamePaused()){
+        System.out.println("hi");
+        if(player.getLives() > 0 && !gamePaused()){
             double angle = Math.toDegrees(Math.atan2(mouseInputs.cursorY - player.getYpos(), mouseInputs.cursorX - player.getXpos())) + 90;
             g.drawImage(rotator.rotate(player.getPlayerImage(), angle), player.getXpos() - player.getWidth()/2, player.getYpos()- player.getHeight()/2, null);
             for (Bullet i : bullets.keySet()){
@@ -150,28 +220,45 @@ public class GamePanel extends JPanel{
                 lastCheck = System.currentTimeMillis();
                 frames = 0;
                 try {
-                    enemies.put(new Enemy(100, 100), GameConstant.ENEMY_HEALTH);
+                    int enemySpawnX;
+                    int enemySpawnY;
+                    int next = r.nextInt(4);
+                    switch(next){
+                        case 0:
+                            enemySpawnX = 0;
+                            enemySpawnY = 0;
+                            break;
+                        case 1:
+                            enemySpawnX = GameConstant.SCREEN_MAX_WIDTH;
+                            enemySpawnY = GameConstant.SCREEN_MAX_HEIGHT;
+                        break;
+                        case 2:
+                            enemySpawnX = 0;
+                            enemySpawnY = GameConstant.SCREEN_MAX_HEIGHT;
+                            break;
+                        default:
+                            enemySpawnX = GameConstant.SCREEN_MAX_WIDTH;
+                            enemySpawnY = 0;
+                            break;
+                    }
+                    enemies.put(new Enemy(enemySpawnX, enemySpawnY), GameConstant.ENEMY_HEALTH);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-            g.setColor(Color.BLACK);
-            g.setFont(new Font("Arial", Font.BOLD, 30));
-            g.drawString("Score: " + score, 50, 50);
-            g.drawString("Lives: " + playerLives, 300, 50);
+            showGamestuff(g);
         }
         else if (gamePaused()){
-            g.setColor(Color.BLACK);
-            g.setFont(new Font("Arial", Font.BOLD, 100));
-            g.drawString("Game Paused!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
-            g.setColor(Color.darkGray);
-            g.setFont(new Font("Arial", Font.BOLD, 50));
-            g.drawString("Press Esc to Unpause", GameConstant.SCREEN_MAX_WIDTH/2 - 275, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+            showPauseScreen(g);
         }
-        else{
-            g.setColor(Color.BLACK);
-            g.setFont(new Font("Arial", Font.BOLD, 100));
-            g.drawString("Game Finished!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
+        else {
+            System.out.println(toggleLB);
+            if (toggleLB) {
+                printLeaderboard(g);
+            } else {
+                System.out.println("end");
+                showEndScreen(g);
+            }
         }
     }
 

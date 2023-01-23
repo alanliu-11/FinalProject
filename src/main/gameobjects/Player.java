@@ -2,7 +2,6 @@ package main.gameobjects;
 
 
 import main.GameConstant;
-import main.gameobjects.BaseObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -11,8 +10,7 @@ import java.io.IOException;
 
 
 public class Player extends BaseObject {
-
-    private final int DELAY = 25;
+    public int playerLives = 1;
     public Player(int posx, int posy){
         setXpos(posx);
         setYpos(posy) ;
@@ -65,5 +63,14 @@ public class Player extends BaseObject {
     @Override
     public void step() {
 
+    }
+    public void loseLife(){
+        playerLives--;
+    }
+    public int getLives(){
+        return playerLives;
+    }
+    public void setPlayerLives(int set){
+        playerLives = set;
     }
 }
