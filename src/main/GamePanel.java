@@ -166,7 +166,7 @@ public class GamePanel extends JPanel{
                 for (String player : leaderBoard.get(score)) {
                     g.setColor(Color.BLACK);
                     g.setFont(new Font("Arial", Font.BOLD, 30));
-                    g.drawString(String.format("%10s %3s", player, score), GameConstant.SCREEN_MAX_WIDTH / 2 - 350, yPrint);
+                    g.drawString(score + " " + player, GameConstant.SCREEN_MAX_WIDTH / 2 - 350, yPrint);
                         yPrint += 50;
                         printed++;
                 }
