@@ -1,29 +1,28 @@
 package inputs;
 
-import main.GamePanel;
-
+import main.GameConstant;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.IOException;
 
+/**
+ * This class handles mouseinput logic
+ * @author Alan Liu
+ */
 public class  MouseInputs implements MouseListener, MouseMotionListener {
-    private GamePanel gamePanel;
     public int cursorX;
     public int cursorY;
     private boolean mouseDown = false;
-    public MouseInputs(GamePanel gamePanel){
-        this.gamePanel = gamePanel;
+    public MouseInputs(){
     }
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             mouseDown = true;
         }
-        long wait = 20;
         long time = System.currentTimeMillis();
         while (true){
-            if (System.currentTimeMillis() - wait >= time){
+            if (System.currentTimeMillis() - GameConstant.wait >= time){
                 mouseDown = false;
                 break;
             }
