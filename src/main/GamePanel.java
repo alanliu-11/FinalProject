@@ -24,12 +24,12 @@ public class GamePanel extends JPanel{
     static Player player ;
     boolean canMakeBullet = true;
     long lastBulletCheck = System.currentTimeMillis();
-    static ConcurrentHashMap<Bullet, Integer> bullets = new ConcurrentHashMap<Bullet, Integer>();
+    static ConcurrentHashMap<Bullet, Integer> bullets = new ConcurrentHashMap<>();
     static ConcurrentHashMap<Enemy, Integer> enemies = new ConcurrentHashMap<>();
     static int score = 0;
     public static boolean gamePaused = false;
     public boolean lbToggled = false;
-    private Random r = new Random();
+    private final Random r = new Random();
     public GamePanel() throws IOException {
         initializeLeaderboard();
         this.setBackground(new Color(144,238,144));
@@ -125,7 +125,6 @@ public class GamePanel extends JPanel{
     static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
     static HashSet<String> names = new HashSet<>();
     public void initializeLeaderboard() throws FileNotFoundException {
-        System.out.println(new File("leaderboard.txt").exists());
         Scanner in = new Scanner(new File("leaderboard.txt"));
         if (!in.hasNextInt()){
             return;
@@ -209,8 +208,9 @@ public class GamePanel extends JPanel{
         g.setFont(new Font("Arial", Font.BOLD, 100));
         g.drawString("Game Finished!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2 - 200);
         g.setFont(new Font("Arial", Font.BOLD, 50));
-        g.drawString("Press R to play again", GameConstant.SCREEN_MAX_WIDTH/2 - 265, GameConstant.SCREEN_MAX_HEIGHT/2);
+        g.drawString("Press R to play again", GameConstant.SCREEN_MAX_WIDTH/2 - 275, GameConstant.SCREEN_MAX_HEIGHT/2);
         g.drawString("Press L to show leaderboard", GameConstant.SCREEN_MAX_WIDTH/2 - 325, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+        g.drawString("Press P to exit", GameConstant.SCREEN_MAX_WIDTH/2 - 325, GameConstant.SCREEN_MAX_HEIGHT/2 + 400);
     }
     public static void showPauseScreen(Graphics g){
         g.setColor(Color.BLACK);
@@ -218,9 +218,9 @@ public class GamePanel extends JPanel{
         g.drawString("Game Paused!", GameConstant.SCREEN_MAX_WIDTH/2 - 350, GameConstant.SCREEN_MAX_HEIGHT/2);
         g.setColor(Color.darkGray);
         g.setFont(new Font("Arial", Font.BOLD, 50));
-        g.drawString("Press Esc to Unpause", GameConstant.SCREEN_MAX_WIDTH/2 - 275, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
+        g.drawString("Press Esc to Unpause, press P to exit the application", GameConstant.SCREEN_MAX_WIDTH/2 - 625, GameConstant.SCREEN_MAX_HEIGHT/2 + 200);
     }
-    public static void showGamestuff(Graphics g){
+    public static void showGameStuff(Graphics g){
         g.setColor(Color.BLACK);
         g.setFont(new Font("Arial", Font.BOLD, 30));
         g.drawString("Score: " + score, 50, 50);
@@ -296,7 +296,7 @@ public class GamePanel extends JPanel{
                     throw new RuntimeException(e);
                 }
             }
-            showGamestuff(g);
+            showGameStuff(g);
         }
         else if (gamePaused()){
             showPauseScreen(g);

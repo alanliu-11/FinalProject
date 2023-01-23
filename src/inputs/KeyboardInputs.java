@@ -1,14 +1,13 @@
 package inputs;
 
-import main.Game;
+
 import main.GamePanel;
-import main.GameWindow;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class KeyboardInputs implements KeyListener{
-    private GamePanel gamePanel;
+    private final GamePanel gamePanel;
     private final boolean[] flag = new boolean[4];
     public KeyboardInputs(GamePanel gamePanel){
         this.gamePanel = gamePanel;
@@ -54,6 +53,10 @@ public class KeyboardInputs implements KeyListener{
                     gamePanel.repaint();
                 }
                 break;
+            case KeyEvent.VK_P:
+                if (gamePanel.gamePaused()|| gamePanel.returnGameEnd()){
+                    System.exit(0);
+                }
         }
     }
     @Override
@@ -61,19 +64,15 @@ public class KeyboardInputs implements KeyListener{
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
                 flag[0] = false;
-                //System.out.println("D Released");
                 break;
             case KeyEvent.VK_A:
                 flag[1] = false;
-                //System.out.println("A Released");
                 break;
             case KeyEvent.VK_S:
                 flag[2] = false;
-                //System.out.println("S Released");
                 break;
             case KeyEvent.VK_D:
                 flag[3] = false;
-                //System.out.println("D Released");
                 break;
         }
     }
