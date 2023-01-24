@@ -81,7 +81,7 @@ public class GamePanel extends JPanel{
      * Same concept as the last method but checks if the player and the enemy intersect.
      * When the enemy touches the player, the player dies and lives decrements by 1.
      */
-    private void checkPlayerEnemyCollision() throws FileNotFoundException {
+    private void checkPlayerEnemyCollision() throws IOException {
         Ellipse2D.Double playerCircle = new Ellipse2D.Double(player.getXpos() - (double)player.getWidth()/2, player.getYpos() - (double)player.getHeight()/2, player.getWidth()-50, player.getHeight()-50);
         for (Enemy enemy : enemies.keySet()) {
             Ellipse2D.Double enemyCircle = new Ellipse2D.Double(enemy.x - 25, enemy.y - 25, 50, 50);
@@ -156,7 +156,7 @@ public class GamePanel extends JPanel{
                 }
                 try {
                     checkPlayerEnemyCollision();
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -3,15 +3,17 @@ package main;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
 public class Leaderboard {
     static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
     static HashSet<String> names = new HashSet<>();
-    public void initializeLeaderboard() throws FileNotFoundException {
-        Scanner in = new Scanner(new File("leaderboard.txt"));
+    public void initializeLeaderboard() throws IOException {
+        File file = new File("leaderboard.txt");
+        file.createNewFile();
+        Scanner in = new Scanner(file);
         if (!in.hasNextInt()){
             return;
         }
@@ -27,8 +29,12 @@ public class Leaderboard {
         }
         in.close();
     }
-    public void saveLeaderboard() throws FileNotFoundException {
+    public void saveLeaderboard() throws IOException {
         File leaderboard = new File("leaderboard.txt");
+        if (!leaderboard.exists()){
+            leaderboard.createNewFile();
+        }
+
         PrintWriter pw = new PrintWriter(leaderboard);
         pw.write(leaderBoard.size() + " ");
         for (int i : leaderBoard.keySet()){
