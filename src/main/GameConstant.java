@@ -7,8 +7,8 @@ import java.awt.*;
  * @author Alan Liu
  */
 public class GameConstant {
-    public static final String PLAYER_IMAGE_PATH = "src/res/tank.png";
-    public static final String LEADERBOARD_FILE_NAME = "src/res/leaderboard.txt";
+    public static final String PLAYER_IMAGE_PATH = "tank.png";
+    public static final String LEADERBOARD_FILE_NAME = "leaderboard.txt";
     public static final Dimension SCREEN_SIZE = Toolkit.getDefaultToolkit().getScreenSize();
     public static final int SCREEN_MAX_HEIGHT = (int) SCREEN_SIZE.getHeight() ;
     public static final int SCREEN_MAX_WIDTH = (int) SCREEN_SIZE.getWidth();
