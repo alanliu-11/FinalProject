@@ -53,11 +53,12 @@ public class Leaderboard {
                     g.setColor(Color.BLACK);
                     g.setFont(new Font("Arial", Font.BOLD, 30));
                     g.drawString(score + " " + player, GameConstant.SCREEN_MAX_WIDTH / 2 - 350, yPrint);
-                    yPrint += 50;
+                    yPrint += 100;
                     printed++;
                 }
             }
         }
+        g.drawString("Press L to exit the leaderboard", GameConstant.SCREEN_MAX_WIDTH / 2 - 350, yPrint);
     }
     public void updateLeaderboard(int score){
         String input = JOptionPane.showInputDialog(null, "Enter your username:");
