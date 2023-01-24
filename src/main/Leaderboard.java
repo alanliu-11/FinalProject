@@ -6,7 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
-
+/**
+ * Displays a leaderboard, has initializer method, printing method, and saving method. Saving writes file output
+ */
 public class Leaderboard {
     static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
     static HashSet<String> names = new HashSet<>();
