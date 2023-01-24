@@ -11,7 +11,7 @@ public class Leaderboard {
     static TreeMap<Integer, TreeSet<String>> leaderBoard = new TreeMap<>(Collections.reverseOrder());
     static HashSet<String> names = new HashSet<>();
     public void initializeLeaderboard() throws IOException {
-        File file = new File("leaderboard.txt");
+        File file = new File(GameConstant.LEADERBOARD_FILE_NAME);
         file.createNewFile();
         Scanner in = new Scanner(file);
         if (!in.hasNextInt()){
@@ -30,11 +30,8 @@ public class Leaderboard {
         in.close();
     }
     public void saveLeaderboard() throws IOException {
-        File leaderboard = new File("leaderboard.txt");
-        if (!leaderboard.exists()){
-            leaderboard.createNewFile();
-        }
-
+        File leaderboard = new File(GameConstant.LEADERBOARD_FILE_NAME);
+        leaderboard.createNewFile();
         PrintWriter pw = new PrintWriter(leaderboard);
         pw.write(leaderBoard.size() + " ");
         for (int i : leaderBoard.keySet()){

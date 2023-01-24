@@ -27,7 +27,7 @@ public class Player extends BaseObject {
      * this is called when the image is initialized in GamePanel
      */
     public void initializeImage() throws IOException {
-        BufferedImage image = ImageIO.read(new File(GameConstant.playerImagePath));
+        BufferedImage image = ImageIO.read(new File(GameConstant.PLAYER_IMAGE_PATH));
         this.setImage(image);
     }
 

@@ -22,7 +22,7 @@ public class  MouseInputs implements MouseListener, MouseMotionListener {
         }
         long time = System.currentTimeMillis();
         while (true){
-            if (System.currentTimeMillis() - GameConstant.wait >= time){
+            if (System.currentTimeMillis() - GameConstant.WAIT >= time){
                 mouseDown = false;
                 break;
             }
