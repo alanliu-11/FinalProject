@@ -2,6 +2,10 @@ package main;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Creates a Window (jframe) for the game to be displayed in
+ * @author Alan Liu
+ */
 public class GameWindow {
     public GameWindow(GamePanel gamePanel){
         JFrame jframe;

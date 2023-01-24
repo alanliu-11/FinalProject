@@ -21,7 +21,6 @@ public class KeyboardInputs implements KeyListener{
     }
     @Override
     public void keyPressed(KeyEvent e) {
-        System.out.println("key pressed");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W:
                 flag[0] = true;
@@ -41,10 +40,8 @@ public class KeyboardInputs implements KeyListener{
                 }
                 if (gamePanel.gamePaused()) {
                     gamePanel.unpauseGame();
-                    System.out.println("game unpaused");
                 } else {
                     gamePanel.pauseGame();
-                    System.out.println("game paused");
                 }
                 break;
             case KeyEvent.VK_R:

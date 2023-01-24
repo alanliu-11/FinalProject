@@ -2,6 +2,7 @@ package main.gameobjects;
 
 import main.GameConstant;
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -54,5 +55,15 @@ public class Player extends BaseObject {
     }
     public void setPlayerLives(int set){
         playerLives = set;
+    }
+    public BufferedImage rotate(double angle) {
+        int w = getPlayerImage().getWidth();
+        int h = getPlayerImage().getHeight();
+        BufferedImage newImg = new BufferedImage(w, h, getPlayerImage().getType());
+        Graphics2D g = newImg.createGraphics();
+        //rotates the image using the graphics2d class
+        g.rotate(Math.toRadians(angle), (double) w/2, (double) h/2);
+        g.drawImage(getPlayerImage(), null, 0, 0);
+        return newImg;
     }
 }

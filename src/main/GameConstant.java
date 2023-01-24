@@ -2,6 +2,10 @@ package main;
 
 import java.awt.*;
 
+/**
+ * Holds all the game constants
+ * @author Alan Liu
+ */
 public class GameConstant {
     public static final String playerImagePath = "src/res/tank.png";
     public static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -14,7 +18,6 @@ public class GameConstant {
     public static final double ENEMY_SPEED = 0.5;
     public static final int ENEMY_HEALTH = 3;
     public static final int DELAY = 25;
-
     public static final int FPS_SET = 500;
     public static final int INIT_PLAYER_LIVES = 5;
     public static final long wait = 20;
