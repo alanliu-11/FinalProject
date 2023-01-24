@@ -4,7 +4,6 @@ import inputs.MouseInputs;
 import main.gameobjects.Bullet;
 import main.gameobjects.Enemy;
 import main.gameobjects.Player;
-
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
@@ -13,7 +12,10 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * Essential control panel for all actions that occur in game
+ * @author Alan Liu
+ */
 public class GamePanel extends JPanel{
     public KeyboardInputs k = new KeyboardInputs(this);
     public MouseInputs mouseInputs = new MouseInputs();
@@ -54,7 +56,12 @@ public class GamePanel extends JPanel{
     public int getLives(){
         return player.playerLives;
     }
-    private void checkIntersect(Enemy i, Bullet j){
+
+    /**
+     * Checks for Collision between each enemy and each bullet using the pythagorean theorem
+     * Uses the radii of each circle to see if the radii intersect, and if they do then the bullet is touching the enemy, therefore the enemy is hit.
+     */
+    private void checkBulletEnemyCollision(Enemy i, Bullet j){
         Ellipse2D.Double bulletCircle = new Ellipse2D.Double(j.x, j.y, 10, 10);
         Ellipse2D.Double enemyCircle = new Ellipse2D.Double(i.x, i.y, 50, 50);
         double x1 = bulletCircle.getX() + bulletCircle.getWidth()/2;
@@ -70,6 +77,10 @@ public class GamePanel extends JPanel{
             enemies.put(i, enemies.get(i)-1);
         }
     }
+    /**
+     * Same concept as the last method but checks if the player and the enemy intersect.
+     * When the enemy touches the player, the player dies and lives decrements by 1.
+     */
     private void checkPlayerEnemyCollision() throws FileNotFoundException {
         Ellipse2D.Double playerCircle = new Ellipse2D.Double(player.getXpos() - (double)player.getWidth()/2, player.getYpos() - (double)player.getHeight()/2, player.getWidth()-50, player.getHeight()-50);
         for (Enemy enemy : enemies.keySet()) {
@@ -80,7 +91,6 @@ public class GamePanel extends JPanel{
                 enemies = new ConcurrentHashMap<>();
                 player.loseLife();
                 if(player.getLives() == 0){
-                    endGame();
                     leaderboard.updateLeaderboard(score);
                     leaderboard.saveLeaderboard();
                 }
@@ -94,9 +104,6 @@ public class GamePanel extends JPanel{
     }
     public void makeBullet(int cursorX, int cursorY) throws IOException {
         bullets.put(new Bullet(player.getPlayerX(), player.getPlayerY(), Math.toDegrees(Math.atan2(cursorY - player.getYpos(), cursorX - player.getXpos()))), 0);
-    }
-    public void endGame(){
-
     }
     public void pauseGame(){
         gamePaused = true;
@@ -119,9 +126,15 @@ public class GamePanel extends JPanel{
         score = 0;
         enemies = new ConcurrentHashMap<>();
     }
+
+    /**
+     * This is an essential method that draws the graphics on the screen using the Graphics class
+     * All essential things that require drawing on the screen occur here
+     */
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         if(player.getLives() > 0 && !gamePaused()){
+            //Calculates the angle between the player and mouse. It adds 90 because originally the player is facing up
             double angle = Math.toDegrees(Math.atan2(mouseInputs.cursorY - player.getYpos(), mouseInputs.cursorX - player.getXpos())) + 90;
             g.drawImage(player.rotate(angle), player.getXpos() - player.getWidth()/2, player.getYpos()- player.getHeight()/2, null);
             for (Bullet i : bullets.keySet()){
@@ -135,7 +148,7 @@ public class GamePanel extends JPanel{
                 i.draw(g);
                 i.update(player);
                 for(Bullet j : bullets.keySet()){
-                    checkIntersect(i,j);
+                    checkBulletEnemyCollision(i,j);
                 }
                 if (enemies.size() != 0 && enemies.get(i) == 0){ //have to check if the enemies ConcurrentHashmap is greater than 0 as it creates an exception when 2 threads are running and the player dies (hashmap gets reset to a new one)
                     enemies.remove(i);
@@ -162,6 +175,7 @@ public class GamePanel extends JPanel{
             if (System.currentTimeMillis() - lastCheck >= GameConstant.CHECK_DURATION){
                 lastCheck = System.currentTimeMillis();
                 try {
+                    //creates a random spawn point for the enemy it can spawn in either one of the four corners of the screen.
                     int enemySpawnX;
                     int enemySpawnY;
                     int next = r.nextInt(4);

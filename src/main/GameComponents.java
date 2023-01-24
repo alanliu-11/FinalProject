@@ -1,9 +1,11 @@
 package main;
 
 import main.gameobjects.Player;
-
 import java.awt.*;
 
+/**
+ * Displays important components in the game, such as the endscreen, pause screen, and lives/score in the game.
+ */
 public class GameComponents {
     public static void showEndScreen(Graphics g){
         g.setColor(Color.LIGHT_GRAY);
